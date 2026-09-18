@@ -24,15 +24,15 @@ On plain Debian with a regular user, keep `sudo`.
 Quick install via curl:
 
 ```bash
-sudo curl -fsSL -o /usr/local/bin/pve-update.sh \
-  https://raw.githubusercontent.com/stephdl/proxmox-updater/main/pve-update.sh
-sudo chmod 750 /usr/local/bin/pve-update.sh
+sudo curl -fsSL -o /usr/local/bin/proxmox-updater.sh \
+  https://raw.githubusercontent.com/stephdl/proxmox-updater/main/proxmox-updater.sh
+sudo chmod 750 /usr/local/bin/proxmox-updater.sh
 
-sudo curl -fsSL -o /etc/logrotate.d/pve-update \
-  https://raw.githubusercontent.com/stephdl/proxmox-updater/main/pve-update.logrotate
+sudo curl -fsSL -o /etc/logrotate.d/proxmox-updater \
+  https://raw.githubusercontent.com/stephdl/proxmox-updater/main/proxmox-updater.logrotate
 
-sudo touch /var/log/pve-update.log
-sudo chmod 640 /var/log/pve-update.log
+sudo touch /var/log/proxmox-updater.log
+sudo chmod 640 /var/log/proxmox-updater.log
 ```
 
 ## Scheduling
@@ -43,16 +43,16 @@ manage).
 ### Option A: systemd timer (recommended)
 
 ```bash
-sudo curl -fsSL -o /etc/systemd/system/pve-update.service \
-  https://raw.githubusercontent.com/stephdl/proxmox-updater/main/pve-update.service
-sudo curl -fsSL -o /etc/systemd/system/pve-update.timer \
-  https://raw.githubusercontent.com/stephdl/proxmox-updater/main/pve-update.timer
+sudo curl -fsSL -o /etc/systemd/system/proxmox-updater.service \
+  https://raw.githubusercontent.com/stephdl/proxmox-updater/main/proxmox-updater.service
+sudo curl -fsSL -o /etc/systemd/system/proxmox-updater.timer \
+  https://raw.githubusercontent.com/stephdl/proxmox-updater/main/proxmox-updater.timer
 
 sudo systemctl daemon-reload
-sudo systemctl enable --now pve-update.timer
+sudo systemctl enable --now proxmox-updater.timer
 ```
 
-`pve-update.timer` options:
+`proxmox-updater.timer` options:
 
 - `OnCalendar=Sun 00:00:00` — base run time, once a week.
 - `RandomizedDelaySec=6h` — spreads the actual start over a 6h window, so
@@ -62,30 +62,30 @@ sudo systemctl enable --now pve-update.timer
 - `Persistent=true` — if the host was off at the scheduled time, runs once
   as soon as it's back on, instead of skipping to next week.
 
-Output goes straight to journald, tagged `pve-update` (`SyslogIdentifier`
+Output goes straight to journald, tagged `proxmox-updater` (`SyslogIdentifier`
 in the `.service` file). No log file, no logrotate needed:
 
 ```bash
-journalctl -u pve-update.service -e
+journalctl -u proxmox-updater.service -e
 ```
 
 Run it once manually to test, without waiting for the timer:
 
 ```bash
-sudo systemctl start pve-update.service
+sudo systemctl start proxmox-updater.service
 ```
 
 ### Option B: plain cron
 
 ```bash
-echo "0 3 * * 0 root /usr/local/bin/pve-update.sh >> /var/log/pve-update.log 2>&1" \
-  | sudo tee /etc/cron.d/pve-update
+echo "0 3 * * 0 root /usr/local/bin/proxmox-updater.sh >> /var/log/proxmox-updater.log 2>&1" \
+  | sudo tee /etc/cron.d/proxmox-updater
 ```
 
 Check the log after a run:
 
 ```bash
-tail -50 /var/log/pve-update.log
+tail -50 /var/log/proxmox-updater.log
 ```
 
 With cron, the script writes to a plain file, so it needs logrotate (see
@@ -100,14 +100,14 @@ find /etc -name "*.dpkg-dist" -o -name "*.ucf-dist"
 
 ## Log rotation (cron option only)
 
-`pve-update.logrotate` rotates `/var/log/pve-update.log` weekly, keeps 8
+`proxmox-updater.logrotate` rotates `/var/log/proxmox-updater.log` weekly, keeps 8
 archives, compresses old ones, and uses `copytruncate` so the running cron
 job never writes to a moved/deleted file descriptor.
 
 Test it manually:
 
 ```bash
-sudo logrotate -f /etc/logrotate.d/pve-update
+sudo logrotate -f /etc/logrotate.d/proxmox-updater
 ```
 
 ## Tested on

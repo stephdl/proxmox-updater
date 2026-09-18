@@ -3,5 +3,5 @@ Description=Download and install Proxmox/Debian package updates
 
 [Service]
 Type=oneshot
-ExecStart=/usr/local/bin/pve-update.sh
-SyslogIdentifier=pve-update
+ExecStart=/usr/local/bin/proxmox-updater.sh
+SyslogIdentifier=proxmox-updater
