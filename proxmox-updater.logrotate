@@ -1,4 +1,4 @@
-/var/log/pve-update.log {
+/var/log/proxmox-updater.log {
     weekly
     rotate 8
     compress
