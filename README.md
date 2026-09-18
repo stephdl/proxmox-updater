@@ -35,9 +35,47 @@ sudo touch /var/log/pve-update.log
 sudo chmod 640 /var/log/pve-update.log
 ```
 
-## Cron setup
+## Scheduling
 
-Run it weekly, Sunday at 3am, log everything:
+Two options: plain cron, or a systemd timer (recommended, no log file to
+manage).
+
+### Option A: systemd timer (recommended)
+
+```bash
+sudo curl -fsSL -o /etc/systemd/system/pve-update.service \
+  https://raw.githubusercontent.com/stephdl/proxmox-updater/main/pve-update.service
+sudo curl -fsSL -o /etc/systemd/system/pve-update.timer \
+  https://raw.githubusercontent.com/stephdl/proxmox-updater/main/pve-update.timer
+
+sudo systemctl daemon-reload
+sudo systemctl enable --now pve-update.timer
+```
+
+`pve-update.timer` options:
+
+- `OnCalendar=Sun 00:00:00` — base run time, once a week.
+- `RandomizedDelaySec=6h` — spreads the actual start over a 6h window, so
+  many hosts don't hit the mirrors at the exact same second.
+- `FixedRandomDelay=true` — keeps that random offset the same on every run
+  for a given host, instead of picking a new one each time.
+- `Persistent=true` — if the host was off at the scheduled time, runs once
+  as soon as it's back on, instead of skipping to next week.
+
+Output goes straight to journald, tagged `pve-update` (`SyslogIdentifier`
+in the `.service` file). No log file, no logrotate needed:
+
+```bash
+journalctl -u pve-update.service -e
+```
+
+Run it once manually to test, without waiting for the timer:
+
+```bash
+sudo systemctl start pve-update.service
+```
+
+### Option B: plain cron
 
 ```bash
 echo "0 3 * * 0 root /usr/local/bin/pve-update.sh >> /var/log/pve-update.log 2>&1" \
@@ -50,13 +88,17 @@ Check the log after a run:
 tail -50 /var/log/pve-update.log
 ```
 
-Check if a config file was kept instead of upgraded:
+With cron, the script writes to a plain file, so it needs logrotate (see
+below). No randomized delay here: every host on the same cron line fires at
+the exact same second.
+
+Either way, check if a config file was kept instead of upgraded:
 
 ```bash
 find /etc -name "*.dpkg-dist" -o -name "*.ucf-dist"
 ```
 
-## Log rotation
+## Log rotation (cron option only)
 
 `pve-update.logrotate` rotates `/var/log/pve-update.log` weekly, keeps 8
 archives, compresses old ones, and uses `copytruncate` so the running cron
