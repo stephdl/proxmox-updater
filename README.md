@@ -18,6 +18,9 @@ without hanging on a prompt, cleans up old kernels, and logs everything.
 
 ## Installation
 
+On Proxmox VE, you're root by default: drop `sudo` from the commands below.
+On plain Debian with a regular user, keep `sudo`.
+
 Quick install via curl:
 
 ```bash
