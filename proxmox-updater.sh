@@ -8,7 +8,7 @@ apt update
 apt-get -y \
   -o Dpkg::Options::="--force-confdef" \
   -o Dpkg::Options::="--force-confold" \
-  dist-upgrade
+  full-upgrade
 apt autoremove -y
 apt clean
 
