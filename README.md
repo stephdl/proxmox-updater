@@ -27,12 +27,6 @@ Quick install via curl:
 sudo curl -fsSL -o /usr/local/bin/proxmox-updater.sh \
   https://raw.githubusercontent.com/stephdl/proxmox-updater/main/proxmox-updater.sh
 sudo chmod 750 /usr/local/bin/proxmox-updater.sh
-
-sudo curl -fsSL -o /etc/logrotate.d/proxmox-updater \
-  https://raw.githubusercontent.com/stephdl/proxmox-updater/main/proxmox-updater.logrotate
-
-sudo touch /var/log/proxmox-updater.log
-sudo chmod 640 /var/log/proxmox-updater.log
 ```
 
 ## Scheduling
@@ -78,6 +72,12 @@ sudo systemctl start proxmox-updater.service
 ### Option B: plain cron
 
 ```bash
+sudo curl -fsSL -o /etc/logrotate.d/proxmox-updater \
+  https://raw.githubusercontent.com/stephdl/proxmox-updater/main/proxmox-updater.logrotate
+
+sudo touch /var/log/proxmox-updater.log
+sudo chmod 640 /var/log/proxmox-updater.log
+
 echo "0 3 * * 0 root /usr/local/bin/proxmox-updater.sh >> /var/log/proxmox-updater.log 2>&1" \
   | sudo tee /etc/cron.d/proxmox-updater
 ```
