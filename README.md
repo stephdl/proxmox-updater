@@ -48,7 +48,7 @@ sudo systemctl enable --now proxmox-updater.timer
 
 `proxmox-updater.timer` options:
 
-- `OnCalendar=Sun 00:00:00` — base run time, once a week.
+- `OnCalendar=Tue 00:00:00` — base run time, once a week.
 - `RandomizedDelaySec=6h` — spreads the actual start over a 6h window, so
   many hosts don't hit the mirrors at the exact same second.
 - `FixedRandomDelay=true` — keeps that random offset the same on every run
@@ -78,7 +78,7 @@ sudo curl -fsSL -o /etc/logrotate.d/proxmox-updater \
 sudo touch /var/log/proxmox-updater.log
 sudo chmod 640 /var/log/proxmox-updater.log
 
-echo "0 3 * * 0 root /usr/local/bin/proxmox-updater.sh >> /var/log/proxmox-updater.log 2>&1" \
+echo "0 3 * * 2 root /usr/local/bin/proxmox-updater.sh >> /var/log/proxmox-updater.log 2>&1" \
   | sudo tee /etc/cron.d/proxmox-updater
 ```
 
