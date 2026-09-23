@@ -2,7 +2,7 @@
 Description=Weekly Proxmox/Debian update window
 
 [Timer]
-# Fires once between Sun 00:00 and Sun 06:00. If the host was off at that
+# Fires once between Tue 00:00 and Tue 06:00. If the host was off at that
 # time, it runs as soon as it powers back on.
 OnCalendar=Tue 00:00:00
 RandomizedDelaySec=6h
