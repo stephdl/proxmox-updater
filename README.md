@@ -110,6 +110,24 @@ Test it manually:
 sudo logrotate -f /etc/logrotate.d/proxmox-updater
 ```
 
+## On a NethServer 8 Debian node
+
+NS8 does not update the OS of Debian nodes. This script can do it, run
+locally on each Debian node. If the cluster also runs
+[ns8-cluster-updater](https://github.com/stephdl/ns8-cluster-updater)
+(Tuesday to Friday), move this timer to another day, so a package upgrade
+never runs during a core update:
+
+```bash
+sudo systemctl edit proxmox-updater.timer
+```
+
+```ini
+[Timer]
+OnCalendar=
+OnCalendar=Mon 00:00:00
+```
+
 ## Tested on
 
 Debian 13 (trixie), Proxmox VE 8/9 hosts.
