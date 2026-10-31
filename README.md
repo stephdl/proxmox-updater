@@ -131,3 +131,7 @@ OnCalendar=Mon 00:00:00
 ## Tested on
 
 Debian 13 (trixie), Proxmox VE 8/9 hosts.
+
+## License
+
+GPL-3.0, see [LICENSE](LICENSE).
